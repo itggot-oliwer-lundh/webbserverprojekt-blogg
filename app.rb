@@ -58,3 +58,16 @@ end
 get('/profile/:username') do
     slim(:profile, locals:{user:params["username"]})
 end
+
+get('/inlagg ') do
+    slim(:inlagg)
+end 
+
+post('/inlagg') do
+    db = SQLite3::Database.new("db/bloggdatabas.db")
+    db.results_as_hash = true
+    
+    db.execute("INSERT INTO inlagg(username, text) VALUES (?,?)", [session[:username], params["text"]])
+
+    redirect("/profile/#{params["username"]}")
+end
