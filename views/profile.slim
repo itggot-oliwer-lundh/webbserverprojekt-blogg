@@ -11,3 +11,7 @@
                 .info
                     input type="text" placeholder="Blogginlägg" name="text"
                     input type="submit" value="Puplicera"
+
+        - inlagg.each do |posdt|
+            article 
+                p #{posdt["text"]}

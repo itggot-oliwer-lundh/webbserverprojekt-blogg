@@ -36,7 +36,10 @@ end
 post('/login') do
     db = SQLite3::Database.new("db/bloggdatabas.db")
     db.results_as_hash = true
-    
+
+    session[:inlagg] = db.execute("SELECT text FROM inlagg WHERE username=?", [params["username"]])
+    inlagg = session[:inlagg]
+
     existing_user = db.execute("SELECT password FROM user_login WHERE username=?", [params["username"]])
 
     if existing_user.length == 0
@@ -56,11 +59,12 @@ post('/login') do
 end
 
 get('/profile/:username') do
-    slim(:profile, locals:{user:params["username"]})
+    slim(:profile, locals:{user:params["username"], inlagg: session[:inlagg]})
+    
 end
 
 get('/inlagg ') do
-    slim(:inlagg)
+    slim(:inlagg, locals:{user:params["username"], inlagg: session[:inlagg]})
 end 
 
 post('/inlagg') do
@@ -69,5 +73,8 @@ post('/inlagg') do
     
     db.execute("INSERT INTO inlagg(username, text) VALUES (?,?)", [session[:username], params["text"]])
 
-    redirect("/profile/#{params["username"]}")
+    session[:inlagg] = db.execute("SELECT text FROM inlagg WHERE username=?", [params["username"]])
+    inlagg = session[:inlagg]
+
+    redirect("/profile/#{session[:username]}")
 end
